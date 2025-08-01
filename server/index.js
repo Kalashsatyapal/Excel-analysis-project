@@ -3,34 +3,48 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// Constants
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/excel-project";
-
-// Initialize app
 const app = express();
 
-// Middleware
+// 🌐 Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// 📦 Route Imports
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/protected", require("./routes/protected"));
+app.use("/api/upload", require("./routes/upload"));
 
-// Health route (optional, helpful for dev sanity checks)
-app.get("/", (req, res) => res.send("🚀 Server is alive and kicking!"));
+// 🛠 Validate Environment Variables
+const requiredEnv = ["MONGO_URI", "PORT"];
+requiredEnv.forEach((key) => {
+  if (!process.env[key]) {
+    console.error(`❌ Missing required env variable: ${key}`);
+    process.exit(1);
+  }
+});
 
-// MongoDB connection
-mongoose
-  .connect(MONGO_URI)
+// 🔗 Connect to MongoDB
+
+
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log(`✅ Connected to MongoDB`);
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log("✅ Connected to MongoDB");
+    app.listen(process.env.PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${process.env.PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1); // Exit with failure
+    console.error("❌ MongoDB connection error:", err.message);
+    process.exit(1); // Exit on DB failure
   });
+  
+
+// 🏠 Root Route
+app.get("/", (req, res) => {
+  res.send("Server is live 🚀");
+});
+
+// 🧪 Optional: Dev-only logging
+if (process.env.NODE_ENV === "development") {
+  console.log("🧪 Running in development mode");
+}

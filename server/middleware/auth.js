@@ -6,7 +6,7 @@ exports.verifyUser = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // ✅ contains userId and role now
     next();
   } catch {
     res.status(401).json({ msg: "Invalid token" });
