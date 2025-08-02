@@ -10,6 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+const excelRoutes = require('./routes/excelRoutes');
+app.use('/api/excel', excelRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
